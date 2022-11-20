@@ -7,6 +7,7 @@ export class Pong extends Phaser.Scene {
     this.score = 0;
     this.paddleSpeed = 8;
     this.paddleSize = 0.3;
+    this.ballSize = 0.5
     this.spaceBoost = 8;
   }
 
@@ -15,12 +16,19 @@ export class Pong extends Phaser.Scene {
       frameWidth: 50,
       frameHeight: 150,
     });
+
+    this.load.atlas("atlas", "assets/sprites.png", "assets/atlas.json")
   }
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.leftPaddle = this.physics.add.sprite(30, 300, "left-paddle");
+    this.leftPaddle = this.add.sprite(30, 300, "left-paddle");
+    this.ball = this.physics.add.image(200, 300, 'atlas', 'ball');
+    
+    this.ball.body.bounce.set(.9);
     this.leftPaddle.setScale(this.paddleSize);
-    this.leftPaddle.setCollideWorldBounds(true);
+    this.ball.setScale(this.ballSize)
+
+    this.ball.setCollideWorldBounds(true);
   }
   update() {
     if (this.gameOver) return;
