@@ -38,8 +38,8 @@ export class Pong extends Phaser.Scene {
     this.rightPaddle.body.setSize(10, 110, true);
     this.rightPaddle.body.setImmovable();
 
-    this.ball.setDrag(-10, -10);
-    this.ball.body.bounce.set(0.9);
+    this.ball.setDrag(0, 0);
+    this.ball.body.bounce.set(1);
     this.ball.body.setSize(15, 15, true);
     this.ball.setScale(this.ballSize);
     this.ball.setCollideWorldBounds(true);
@@ -47,7 +47,7 @@ export class Pong extends Phaser.Scene {
 
     this.ball.body.onWorldBounds = true;
 
-    this.ball.setRandomPosition(267, 0, 267, 600);
+    this.ball.setRandomPosition(277, 0, 267, 600);
     this.ball.setVelocityX(Math.floor(Math.random() * 101) - 400);
     this.ball.setVelocityY(Math.floor(Math.random() * 101) - 400);
   }
@@ -78,9 +78,9 @@ export class Pong extends Phaser.Scene {
     });
 
     if (this.ball.y < this.rightPaddle.y) {
-      this.rightPaddle.y -= this.paddleSpeed - 4
+      this.rightPaddle.y -= this.paddleSpeed - 2.8
     } else {
-      this.rightPaddle.y += this.paddleSpeed - 4
+      this.rightPaddle.y += this.paddleSpeed - 2.8
     }
 
     if (
