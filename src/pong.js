@@ -6,8 +6,8 @@ export class Pong extends Phaser.Scene {
     this.gameOver = false;
     this.score = 0;
     this.paddleSpeed = 8;
-    this.paddleSize = .5;
-    this.ballSize = .5;
+    this.paddleSize = 0.5;
+    this.ballSize = 0.5;
     this.spaceBoost = 8;
   }
 
@@ -18,36 +18,49 @@ export class Pong extends Phaser.Scene {
     });
 
     this.load.atlas("atlas", "assets/sprites.png", "assets/atlas.json");
+    this.load.audio("bounce", "assets/audio/sound-effects/bounce-effect.mp3");
   }
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.bounce = this.sound.add("bounce");
 
     this.leftPaddle = this.physics.add.image(30, 300, "left-paddle");
     this.ball = this.physics.add.image(200, 300, "atlas", "ball");
-    
+
     this.leftPaddle.setScale(this.paddleSize);
-    this.leftPaddle.body.setSize(10, 110, true)
-    this.leftPaddle.body.setImmovable()
-    
+    this.leftPaddle.body.setSize(10, 110, true);
+    this.leftPaddle.body.setImmovable();
+
     this.ball.setDrag(-10, -10);
     this.ball.body.bounce.set(0.9);
-    this.ball.body.setSize(15, 15, true)
+    this.ball.body.setSize(15, 15, true);
     this.ball.setScale(this.ballSize);
     this.ball.setCollideWorldBounds(true);
+    this.ball.body.collideWorldBounds = true;
+
+    this.ball.body.onWorldBounds = true;
+
     this.ball.setRandomPosition(267, 0, 267, 600);
     this.ball.setVelocityX(Math.floor(Math.random() * 101) - 400);
     this.ball.setVelocityY(Math.floor(Math.random() * 101) - 400);
   }
   update() {
-    this.physics.collide(this.leftPaddle, this.ball);
-    this.physics.add.collider(
-      this.leftPaddle,
-      this.ball,
-      function (leftPaddle, ball) {
-        console.log(leftPaddle, "Hit!", ball);
-      }
-    );
     if (this.gameOver) return;
+
+    this.physics.collide(this.leftPaddle, this.ball);
+    this.physics.add.collider(this.leftPaddle, this.ball, () => {
+      this.bounce.play();
+    });
+
+    this.physics.world.on("worldbounds", (body, up, down, left, right) => {
+      console.log("bouncing off top or bottom");
+      if(up) this.bounce.play();
+      if(down) this.bounce.play();
+      if(left) {
+        console.log("Game is over")
+        this.gameOver = true;
+      }
+    });
 
     if (
       this.cursors.down.isDown &&
