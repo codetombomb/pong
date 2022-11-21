@@ -27,11 +27,16 @@ export class Pong extends Phaser.Scene {
     this.score = this.sound.add("score", {volume: 0.1});
 
     this.leftPaddle = this.physics.add.image(30, 300, "left-paddle");
+    this.rightPaddle = this.physics.add.image(770, 300, "atlas", "rightPaddle");
     this.ball = this.physics.add.image(200, 300, "atlas", "ball");
 
     this.leftPaddle.setScale(this.paddleSize);
     this.leftPaddle.body.setSize(10, 110, true);
     this.leftPaddle.body.setImmovable();
+
+    this.rightPaddle.setScale(this.paddleSize);
+    this.rightPaddle.body.setSize(10, 110, true);
+    this.rightPaddle.body.setImmovable();
 
     this.ball.setDrag(-10, -10);
     this.ball.body.bounce.set(0.9);
@@ -53,6 +58,11 @@ export class Pong extends Phaser.Scene {
     this.physics.add.collider(this.leftPaddle, this.ball, () => {
       this.bounce.play();
     });
+    
+    this.physics.collide(this.rightPaddle, this.ball);
+    this.physics.add.collider(this.rightPaddle, this.ball, () => {
+      this.bounce.play();
+    });
 
     this.physics.world.on("worldbounds", (body, up, down, left, right) => {
       if(up) this.bounce.play();
@@ -66,6 +76,12 @@ export class Pong extends Phaser.Scene {
         this.scorePoint("red")
       }
     });
+
+    if (this.ball.y < this.rightPaddle.y) {
+      this.rightPaddle.y -= this.paddleSpeed - 4
+    } else {
+      this.rightPaddle.y += this.paddleSpeed - 4
+    }
 
     if (
       this.cursors.down.isDown &&
