@@ -19,10 +19,12 @@ export class Pong extends Phaser.Scene {
 
     this.load.atlas("atlas", "assets/sprites.png", "assets/atlas.json");
     this.load.audio("bounce", "assets/audio/sound-effects/bounce-effect.mp3");
+    this.load.audio("score", "assets/audio/sound-effects/score-effect.wav");
   }
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.bounce = this.sound.add("bounce");
+    this.score = this.sound.add("score", {volume: 0.1});
 
     this.leftPaddle = this.physics.add.image(30, 300, "left-paddle");
     this.ball = this.physics.add.image(200, 300, "atlas", "ball");
@@ -53,12 +55,15 @@ export class Pong extends Phaser.Scene {
     });
 
     this.physics.world.on("worldbounds", (body, up, down, left, right) => {
-      console.log("bouncing off top or bottom");
       if(up) this.bounce.play();
       if(down) this.bounce.play();
       if(left) {
-        console.log("Game is over")
-        this.gameOver = true;
+        this.score.play()
+        this.scorePoint("blue")
+      }
+      if(right) {
+        this.score.play()
+        this.scorePoint("red")
       }
     });
 
@@ -84,5 +89,7 @@ export class Pong extends Phaser.Scene {
     }
   }
 
-  scorePoint() {}
+  scorePoint(side) {
+    console.log(side, " scored!")
+  }
 }
