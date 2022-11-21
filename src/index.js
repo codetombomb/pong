@@ -10,8 +10,8 @@ const config = {
     physics: {
       default: 'arcade',
       arcade: {
-        // gravity: { y: 50 },
-        // debug: true
+        // gravity: { x: -100, y: -100 },
+        debug: true
       }
     },
     scene: [Pong]

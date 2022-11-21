@@ -6,8 +6,8 @@ export class Pong extends Phaser.Scene {
     this.gameOver = false;
     this.score = 0;
     this.paddleSpeed = 8;
-    this.paddleSize = 0.3;
-    this.ballSize = 0.5
+    this.paddleSize = 1;
+    this.ballSize = 1;
     this.spaceBoost = 8;
   }
 
@@ -17,28 +17,49 @@ export class Pong extends Phaser.Scene {
       frameHeight: 150,
     });
 
-    this.load.atlas("atlas", "assets/sprites.png", "assets/atlas.json")
+    this.load.atlas("atlas", "assets/sprites.png", "assets/atlas.json");
   }
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.leftPaddle = this.add.sprite(30, 300, "left-paddle");
-    this.ball = this.physics.add.image(200, 300, 'atlas', 'ball');
-    
-    this.ball.body.bounce.set(.9);
+    this.leftPaddle = this.physics.add.image(30, 300, "left-paddle");
+    this.leftPaddle.body.setSize(10, 110, true)
+    // this.leftPaddle = this.physics.add.sprite(30, 300, "left-paddle");
+    this.ball = this.physics.add.image(200, 300, "atlas", "ball");
+
     this.leftPaddle.setScale(this.paddleSize);
-    
-    this.ball.setScale(this.ballSize)
+
+    this.ball.setDrag(-10, -10);
+    this.ball.body.bounce.set(0.9);
+    this.ball.body.setSize(10, 10, true)
+    this.ball.setScale(this.ballSize);
     this.ball.setCollideWorldBounds(true);
-    this.ball.setRandomPosition(267, 0, 267, 600)
-    this.ball.setVelocityX(Math.floor(Math.random() * 101) - 400)
-    this.ball.setVelocityY(Math.floor(Math.random() * 101) - 400)
+    this.ball.setRandomPosition(267, 0, 267, 600);
+    this.ball.setVelocityX(Math.floor(Math.random() * 101) - 400);
+    this.ball.setVelocityY(Math.floor(Math.random() * 101) - 400);
   }
   update() {
+    this.physics.collide(this.leftPaddle, this.ball);
+    this.physics.add.collider(
+      this.leftPaddle,
+      this.ball,
+      function (leftPaddle, ball) {
+        console.log(leftPaddle, "Hit!", ball);
+      }
+    );
     if (this.gameOver) return;
-    if (this.cursors.down.isDown && this.cursors.space.isDown && this.leftPaddle.y <= 580) {
+
+    if (
+      this.cursors.down.isDown &&
+      this.cursors.space.isDown &&
+      this.leftPaddle.y <= 580
+    ) {
       this.leftPaddle.y += this.paddleSpeed + this.spaceBoost;
     }
-    if (this.cursors.up.isDown && this.cursors.space.isDown && this.leftPaddle.y >= 20) {
+    if (
+      this.cursors.up.isDown &&
+      this.cursors.space.isDown &&
+      this.leftPaddle.y >= 20
+    ) {
       this.leftPaddle.y -= this.paddleSpeed + this.spaceBoost;
     }
     if (this.cursors.down.isDown && this.leftPaddle.y <= 580) {
