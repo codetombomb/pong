@@ -6,8 +6,8 @@ export class Pong extends Phaser.Scene {
     this.gameOver = false;
     this.score = 0;
     this.paddleSpeed = 8;
-    this.paddleSize = 1;
-    this.ballSize = 1;
+    this.paddleSize = .5;
+    this.ballSize = .5;
     this.spaceBoost = 8;
   }
 
@@ -21,16 +21,17 @@ export class Pong extends Phaser.Scene {
   }
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
+
     this.leftPaddle = this.physics.add.image(30, 300, "left-paddle");
-    this.leftPaddle.body.setSize(10, 110, true)
-    // this.leftPaddle = this.physics.add.sprite(30, 300, "left-paddle");
     this.ball = this.physics.add.image(200, 300, "atlas", "ball");
-
+    
     this.leftPaddle.setScale(this.paddleSize);
-
+    this.leftPaddle.body.setSize(10, 110, true)
+    this.leftPaddle.body.setImmovable()
+    
     this.ball.setDrag(-10, -10);
     this.ball.body.bounce.set(0.9);
-    this.ball.body.setSize(10, 10, true)
+    this.ball.body.setSize(15, 15, true)
     this.ball.setScale(this.ballSize);
     this.ball.setCollideWorldBounds(true);
     this.ball.setRandomPosition(267, 0, 267, 600);
@@ -62,10 +63,10 @@ export class Pong extends Phaser.Scene {
     ) {
       this.leftPaddle.y -= this.paddleSpeed + this.spaceBoost;
     }
-    if (this.cursors.down.isDown && this.leftPaddle.y <= 580) {
+    if (this.cursors.down.isDown && this.leftPaddle.y <= 570) {
       this.leftPaddle.y += this.paddleSpeed;
     }
-    if (this.cursors.up.isDown && this.leftPaddle.y >= 20) {
+    if (this.cursors.up.isDown && this.leftPaddle.y >= 30) {
       this.leftPaddle.y -= this.paddleSpeed;
     }
   }
