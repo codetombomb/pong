@@ -1,0 +1,19 @@
+{
+  "frames": {
+    "ball": {
+      "frame": { "x": 100, "y": 0, "w": 50, "h": 50 },
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 10, "h": 15 },
+      "sourceSize": { "w": 100, "h": 150 }
+    },
+    "leftPaddle": {
+      "frame": { "x": 0, "y": 0, "w": 50, "h": 150 },
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 50, "h": 15 },
+      "sourceSize": { "w": 100, "h": 150 }
+    }
+  },
+  "meta": {
+    "image": "sprites.png",
+    "size": { "w": 250, "h": 150 },
+    "scale": "1"
+  }
+}
