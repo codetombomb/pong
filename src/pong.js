@@ -5,10 +5,15 @@ export class Pong extends Phaser.Scene {
     super();
     this.gameOver = false;
     this.score = 0;
+    this.collidingWith = null;
     this.paddleSpeed = 8;
-    this.paddleSize = 0.5;
+    this.paddleSize = 0.45;
     this.ballSize = 0.5;
     this.spaceBoost = 8;
+    this.playerScores = {
+      red: 0,
+      blue: 0
+    }
   }
 
   preload() {
@@ -26,27 +31,30 @@ export class Pong extends Phaser.Scene {
     this.bounce = this.sound.add("bounce");
     this.score = this.sound.add("score", {volume: 0.1});
 
+    this.redScore = this.add.text(120, 120, `${this.playerScores.red}`, { fontSize: '80px', fill: 'red', fontFamily: "JustMyType" });
+    this.blueScore = this.add.text(680, 120, `${this.playerScores.blue}`, { fontSize: '80px', fill: 'blue', fontFamily: "JustMyType"});
+    
     this.leftPaddle = this.physics.add.image(30, 300, "left-paddle");
     this.rightPaddle = this.physics.add.image(770, 300, "atlas", "rightPaddle");
     this.ball = this.physics.add.image(200, 300, "atlas", "ball");
-
+    
     this.leftPaddle.setScale(this.paddleSize);
     this.leftPaddle.body.setSize(10, 110, true);
     this.leftPaddle.body.setImmovable();
-
+    
     this.rightPaddle.setScale(this.paddleSize);
     this.rightPaddle.body.setSize(10, 110, true);
     this.rightPaddle.body.setImmovable();
-
+    
     this.ball.setDrag(0, 0);
     this.ball.body.bounce.set(1);
     this.ball.body.setSize(15, 15, true);
     this.ball.setScale(this.ballSize);
     this.ball.setCollideWorldBounds(true);
     this.ball.body.collideWorldBounds = true;
-
+    
     this.ball.body.onWorldBounds = true;
-
+    
     this.ball.setRandomPosition(277, 0, 267, 600);
     this.ball.setVelocityX(Math.floor(Math.random() * 101) - 400);
     this.ball.setVelocityY(Math.floor(Math.random() * 101) - 400);
@@ -65,22 +73,28 @@ export class Pong extends Phaser.Scene {
     });
 
     this.physics.world.on("worldbounds", (body, up, down, left, right) => {
-      if(up) this.bounce.play();
-      if(down) this.bounce.play();
-      if(left) {
-        this.score.play()
+      if(up && this.collidingWith !== "up") {
+        this.collidingWith = "up"
+        this.bounce.play()
+      };
+      if(down && this.collidingWith !== "down") {
+        this.collidingWith = "down"
+        this.bounce.play()
+      };
+      if(left && this.collidingWith !== "left") {
+        this.collidingWith = "left"
         this.scorePoint("blue")
       }
-      if(right) {
-        this.score.play()
+      if(right && this.collidingWith !== "right") {
+        this.collidingWith = "right"
         this.scorePoint("red")
       }
     });
 
     if (this.ball.y < this.rightPaddle.y) {
-      this.rightPaddle.y -= this.paddleSpeed - 2.8
+      this.rightPaddle.y -= this.paddleSpeed - 2.75
     } else {
-      this.rightPaddle.y += this.paddleSpeed - 2.8
+      this.rightPaddle.y += this.paddleSpeed - 2.75
     }
 
     if (
@@ -107,5 +121,8 @@ export class Pong extends Phaser.Scene {
 
   scorePoint(side) {
     console.log(side, " scored!")
+    this.playerScores[side] += 1 
+    this[`${side}Score`].setText(this.playerScores[side])
+    this.score.play()
   }
 }
