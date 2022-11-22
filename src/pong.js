@@ -7,8 +7,9 @@ export class Pong extends Phaser.Scene {
     this.score = 0;
     this.collidingWith = null;
     this.paddleSpeed = 8;
-    this.paddleSize = 0.45;
+    this.paddleSize = 1;
     this.ballSize = 0.5;
+    this.ballDirectionUp = true
     this.spaceBoost = 8;
     this.playerScores = {
       red: 0,
@@ -30,7 +31,7 @@ export class Pong extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.bounce = this.sound.add("bounce");
     this.score = this.sound.add("score", {volume: 0.1});
-
+    
     this.redScore = this.add.text(120, 120, `${this.playerScores.red}`, { fontSize: '80px', fill: 'red', fontFamily: "JustMyType" });
     this.blueScore = this.add.text(680, 120, `${this.playerScores.blue}`, { fontSize: '80px', fill: 'blue', fontFamily: "JustMyType"});
     
@@ -41,10 +42,12 @@ export class Pong extends Phaser.Scene {
     this.leftPaddle.setScale(this.paddleSize);
     this.leftPaddle.body.setSize(10, 110, true);
     this.leftPaddle.body.setImmovable();
+    this.leftPaddle.body.setFrictionY(1)
     
     this.rightPaddle.setScale(this.paddleSize);
     this.rightPaddle.body.setSize(10, 110, true);
     this.rightPaddle.body.setImmovable();
+    this.rightPaddle.body.setFrictionY(1)
     
     this.ball.setDrag(0, 0);
     this.ball.body.bounce.set(1);
@@ -52,6 +55,8 @@ export class Pong extends Phaser.Scene {
     this.ball.setScale(this.ballSize);
     this.ball.setCollideWorldBounds(true);
     this.ball.body.collideWorldBounds = true;
+    this.ball.body.setFrictionX(1)
+    this.ball.body.setFrictionY(1)
     
     this.ball.body.onWorldBounds = true;
     
@@ -61,9 +66,16 @@ export class Pong extends Phaser.Scene {
   }
   update() {
     if (this.gameOver) return;
-
+    
     this.physics.collide(this.leftPaddle, this.ball);
     this.physics.add.collider(this.leftPaddle, this.ball, () => {
+      if (this.cursors.down.isDown && this.ballDirectionUp) {
+        this.ball.body.setVelocityY((this.ball.body.velocity.y + 50) - (this.ball.body.velocity.y * 2))
+      } else if (this.cursors.up.isDown && !this.ballDirectionUp){
+        this.ball.body.setVelocityY((this.ball.body.velocity.y - 50) - (this.ball.body.velocity.y * 2))
+      } else {
+        console.log("Paddle is stationary")
+      }
       this.bounce.play();
     });
     
@@ -71,14 +83,16 @@ export class Pong extends Phaser.Scene {
     this.physics.add.collider(this.rightPaddle, this.ball, () => {
       this.bounce.play();
     });
-
+    
     this.physics.world.on("worldbounds", (body, up, down, left, right) => {
       if(up && this.collidingWith !== "up") {
         this.collidingWith = "up"
+        this.ballDirectionUp = false
         this.bounce.play()
       };
       if(down && this.collidingWith !== "down") {
         this.collidingWith = "down"
+        this.ballDirectionUp = true
         this.bounce.play()
       };
       if(left && this.collidingWith !== "left") {
@@ -120,7 +134,6 @@ export class Pong extends Phaser.Scene {
   }
 
   scorePoint(side) {
-    console.log(side, " scored!")
     this.playerScores[side] += 1 
     this[`${side}Score`].setText(this.playerScores[side])
     this.score.play()
