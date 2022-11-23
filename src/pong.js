@@ -11,6 +11,7 @@ export class Pong extends Phaser.Scene {
     this.ballSize = 0.5;
     this.ballDirectionUp = true;
     this.spaceBoost = 8;
+    this.maxScore = 10
     this.playerScores = {
       red: 0,
       blue: 0,
@@ -30,7 +31,7 @@ export class Pong extends Phaser.Scene {
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.bounce = this.sound.add("bounce");
-    this.score = this.sound.add("score", { volume: 0.1 });
+    this.score = this.sound.add("score", { volume: 0.04 });
 
     this.redScore = this.add.text(120, 120, `${this.playerScores.red}`, {
       fontSize: "80px",
@@ -57,11 +58,11 @@ export class Pong extends Phaser.Scene {
     this.rightPaddle.body.setImmovable();
     this.rightPaddle.body.setFrictionY(1);
 
+    this.ball.setCollideWorldBounds(true);
     this.ball.setDrag(0, 0);
     this.ball.body.bounce.set(1);
     this.ball.body.setSize(15, 15, true);
     this.ball.setScale(this.ballSize);
-    this.ball.setCollideWorldBounds(true);
     this.ball.body.collideWorldBounds = true;
     this.ball.body.setFrictionX(1);
     this.ball.body.setFrictionY(1);
@@ -148,7 +149,7 @@ export class Pong extends Phaser.Scene {
   scorePoint(side) {
     this.playerScores[side] += 1;
     this[`${side}Score`].setText(this.playerScores[side]);
-    if (this.playerScores[side] === 3) this.gameOver = true;
+    if (this.playerScores[side] === this.maxScore) this.gameOver = true;
     this.ball.destroy();
     this.leftPaddle.destroy();
     this.rightPaddle.destroy();
@@ -159,7 +160,7 @@ export class Pong extends Phaser.Scene {
       if (!this.gameOver) {
         this.create();
       } else {
-        const winner = this.playerScores.red === 3 ? "red" : "blue"
+        const winner = this.playerScores.red === this.maxScore ? "red" : "blue"
         this.add.text(
           255,
           100,
